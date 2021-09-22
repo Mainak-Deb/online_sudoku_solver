@@ -15,8 +15,32 @@ let arr=[["5","3",".",".","7",".",".",".","."],
 
 let colarr=[[],[],[],[],[],[],[],[],[]]
 
-function solvethis(){
+let gamemode=true;
 
+function isvalid(x,y,val,arr){
+    console.log(x,y)
+    let n=arr.length;
+    for(let i=0;i<n;i++){
+        print(arr[i][y],arr[x][i])
+        if((val==arr[i][y]) && (i!=x)){return [false,[i,y]];}
+        if((val==arr[x][i]) && (i!=y)){return [false,[x,i]];}
+    }
+    let startx=parseInt(x/3)*3
+    let starty=parseInt(y/3)*3
+    for(let i=startx;i<startx+3;i++){
+        for(let j=starty;j<starty+3;j++){
+            console.log(i,j)
+            if((arr[i][j]==val) && ( (i!=x) && (j!=y))){return [false,[i,j]];}
+        }
+    }
+    return [true,[0,0]];
+}
+
+function makesudokupuzzle(){
+    gamemode=true;
+}
+
+function solvethis(){
     solveSudoku(arr)
 }
 
@@ -63,6 +87,7 @@ function solveSudoku(board) {
 
 
 function clearthis(){
+    gamemode=false;
     for(let i=0;i<n;i++){
         for(let j=0;j<n;j++){
             arr[i][j]='.';
@@ -80,7 +105,7 @@ function setup(){
 
     makesudoku = createButton('Make Sudoko');
     makesudoku.position(700, 80);
-    //makesudoku.mousePressed(changeBG);
+    makesudoku.mousePressed(makesudokupuzzle);
 
     clear = createButton('Clear');
     clear.position(810, 80);
@@ -93,8 +118,8 @@ function setup(){
     for(let i=0;i<n;i++){
         for(let j=0;j<n;j++)
         {
-           if( arr[i][j]=='.'){colarr[i].push(false)}
-           else{colarr[i].push(true)}
+           if( arr[i][j]=='.'){colarr[i].push(0)}
+           else{colarr[i].push(1)}
         }
     }
 }
@@ -111,8 +136,14 @@ function draw(){
     
     for(let i=0;i<n;i++){
         for(let j=0;j<n;j++){
-            if(!colarr[i][j]){
-                fill(132,36,12);
+          
+            
+            if((colarr[i][j]==0) || ((colarr[i][j]==2) )){
+                if(colarr[i][j]==0) {
+                    fill(132,36,12);
+                }else{
+                    fill(189, 0, 0)
+                }
                 rect(sx+(i*box),sy+(j*box),box,box);
                 fill(255)
                 if(arr[i][j]!='.'){
@@ -120,7 +151,12 @@ function draw(){
                     text(arr[i][j],sx+(i*box)+box/3, sy+(j*box)+box/1.2);
                 }
             }else{
-                fill(255,193,140);
+                if(colarr[i][j]==3) {
+                    fill(240, 0, 0)
+                }else{
+                    fill(255,193,140);
+                }
+                
                 rect(sx+(i*box),sy+(j*box),box,box);
                 fill(0)
                 if(arr[i][j]!='.'){
@@ -167,11 +203,71 @@ function keyPressed() {
        
             pos=getpos(mouseX,mouseY)
             if(String(key)=='0'){
-                arr[pos[0]][pos[1]]='.'
-                colarr[pos[0]][pos[1]]=false
+                if (colarr[pos[0]][pos[1]]==2){
+                    let con2=isvalid(pos[0],pos[1],arr[pos[0]][pos[1]],arr)
+                    if(colarr[con2[1][0]][con2[1][1]]==3){
+                        colarr[con2[1][0]][con2[1][1]]=1;
+                    }else if(colarr[con2[1][0]][con2[1][1]]==2){
+                        colarr[con2[1][0]][con2[1][1]]=0;
+                    }
+                    colarr[pos[0]][pos[1]]=0;
+                    arr[pos[0]][pos[1]]='.'
+
+                }else if(colarr[pos[0]][pos[1]]==0){
+                    arr[pos[0]][pos[1]]='.'
+                }
+               
+                if(!gamemode){   colarr[pos[0]][pos[1]]=false}
             }else if((parseInt(key)>0) && (parseInt(key)<=9)){
-                arr[pos[0]][pos[1]]=String(key)
-                colarr[pos[0]][pos[1]]=true
+                if((colarr[pos[0]][pos[1]]==0) || (colarr[pos[0]][pos[1]]==2)){
+                    let con=isvalid(pos[0],pos[1],int(parseInt(key)),arr)
+                    print(con)
+                    if(con[0]){
+                        if (colarr[pos[0]][pos[1]]==2){
+                            let con2=isvalid(pos[0],pos[1],arr[pos[0]][pos[1]],arr)
+                            if(colarr[con2[1][0]][con2[1][1]]==3){
+                                colarr[con2[1][0]][con2[1][1]]=1;
+                            }else if(colarr[con2[1][0]][con2[1][1]]==2){
+                                colarr[con2[1][0]][con2[1][1]]=0;
+                            }
+                            colarr[pos[0]][pos[1]]=0;
+                            arr[pos[0]][pos[1]]=String(key)
+
+                        }else if(colarr[pos[0]][pos[1]]==0){
+                            arr[pos[0]][pos[1]]=String(key)
+                        }
+
+                    }else {
+                        if (colarr[pos[0]][pos[1]]==2){
+                            let con2=isvalid(pos[0],pos[1],arr[pos[0]][pos[1]],arr)
+                            if(colarr[con2[1][0]][con2[1][1]]==3){
+                                colarr[con2[1][0]][con2[1][1]]=1;
+                            }else if(colarr[con2[1][0]][con2[1][1]]==2){
+                                colarr[con2[1][0]][con2[1][1]]=0;
+                            }
+                            colarr[pos[0]][pos[1]]=2
+                            if(colarr[con[1][0]][con[1][1]]==1){
+                                colarr[con[1][0]][con[1][1]]=3;
+                            }else if(colarr[con[1][0]][con[1][1]]==0){
+                                colarr[con[1][0]][con[1][1]]=2;
+                            }
+                            arr[pos[0]][pos[1]]=String(key)
+                            
+                        }else if(colarr[pos[0]][pos[1]]==0){
+                            colarr[pos[0]][pos[1]]=2
+                            if(colarr[con[1][0]][con[1][1]]==1){
+                                colarr[con[1][0]][con[1][1]]=3;
+                            }else if(colarr[con[1][0]][con[1][1]]==0){
+                                colarr[con[1][0]][con[1][1]]=2;
+                            }
+                            arr[pos[0]][pos[1]]=String(key)
+                        }
+
+                    }
+                    
+                    
+                    if(!gamemode){ colarr[pos[0]][pos[1]]=true}
+                }
             }
     
         print(key, ' ', keyCode)
