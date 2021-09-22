@@ -36,15 +36,57 @@ function isvalid(x,y,val,arr){
     return [true,[0,0]];
 }
 
-function makesudokupuzzle(){
-    gamemode=true;
-}
+
+function shuffled(array) {
+    let currentIndex = array.length,  randomIndex;
+    while (currentIndex != 0) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex], array[currentIndex]];
+    }
+  
+    return array;
+  }
+  
+
 
 function solvethis(){
     solveSudoku(arr)
+
 }
 
 
+
+function makesudokupuzzle(){
+    
+    print("yes")
+    clearthis()
+    let array=shuffled(['1','2','3','4','5','6','7','8','9'] )
+    for(let i=0;i<n;i++){
+        arr[i][0]=array[i]
+    }
+    solvethis();
+    
+    for(let i=0;i<9;i++){
+        let sx=parseInt(i%3);
+        let sy=parseInt(i/3);
+        let randec=shuffled([1,0,0,1,0,1,0,0,0])
+        for(let j=(sx*3);j<(sx*3)+3;j++){
+            for(let k=(sy*3);k<(sy*3)+3;k++){
+                if(!  randec[((j-(sx*3))*3)+(k-(sy*3))]  ){
+                    arr[j][k]='.';
+                }if(  randec[((j-(sx*3))*3)+(k-(sy*3))]  ){
+                    colarr[j][k]=1;
+                }
+            }
+        }
+
+    }
+    gamemode=true;
+    print(arr)
+    print(colarr)
+}
 
 function solveSudoku(board) {
     let rset = new Array(9).fill(0).map(() => new Set());
@@ -91,7 +133,7 @@ function clearthis(){
     for(let i=0;i<n;i++){
         for(let j=0;j<n;j++){
             arr[i][j]='.';
-            colarr[i][j]=false;
+            colarr[i][j]=0;
         }
     }
 }
