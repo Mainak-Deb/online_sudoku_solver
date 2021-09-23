@@ -164,6 +164,7 @@ function setup(){
            else{colarr[i].push(1)}
         }
     }
+    makesudokupuzzle();
 }
 
 function getpos(x,y){
